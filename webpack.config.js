@@ -1,7 +1,9 @@
 const path = require('path');
 const webpack = require('webpack');
+const { NoEmitOnErrorsPlugin } = require('webpack');
 
 module.exports = {
+    mode: "none",
     context: path.resolve(__dirname, './src'),
     entry: ['@babel/polyfill', './main.js'],
     output: {

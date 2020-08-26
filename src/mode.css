@@ -1,0 +1,9 @@
+.mode {
+    border: none;
+    background-color: white;
+    font-size: 1rem;
+}
+
+.mode:hover {
+    color: #0066FF;
+}
