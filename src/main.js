@@ -15,10 +15,14 @@ export default class Main extends Component {
         super(root);
 
         this.navbar = new Navbar(root.querySelector('.navbar'));
-
-        this.deck = new Deck(root.querySelector('.deck'));
+        // modified
+        this.navbar.on('changeToHard', this.handleToHard.bind(this));
+        this.navbar.on('changeToEasy', this.handleToEasy.bind(this));
+        //modified
+        this.deck = new Deck(root.querySelector('.deck'), this.navbar.current_mode);
         this.deck.on('wrongClick', this.handleDeckWrongClick.bind(this));
         this.deck.on('rightClick', this.handleDeckRightClick.bind(this));
+        this.deck.on('modeReset', this.handleRestClick.bind(this));
 
         this.board = new Board(root.querySelector('.board'), this.deck.getPickedColor());
 
@@ -42,6 +46,14 @@ export default class Main extends Component {
         this.deck.reset();
         this.board.reset(this.deck.getPickedColor());
         this.reset.reset();
+    }
+
+    handleToHard() {
+        this.deck.showHardCard();
+    }
+
+    handleToEasy() {
+        this.deck.hideHardCard();
     }
 }
 

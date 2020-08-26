@@ -13,7 +13,7 @@ export default class Deck extends Component {
         return '.deck';
     }
 
-    constructor(root) {
+    constructor(root, currentMode) {
         super(root);
 
         this.gameOver = false;
@@ -25,6 +25,9 @@ export default class Deck extends Component {
             this.cards.push(card);
         }
         this.pickedColor = this.pickColor();
+        //modified
+        this.currentMode = currentMode;
+        this.hideCards = root.querySelectorAll('.hide_card');
     }
 
     reset() {
@@ -56,5 +59,24 @@ export default class Deck extends Component {
     pickColor() {
         const random = Math.floor(Math.random() * this.cards.length);
         return this.cards[random].getColor();
+    }
+
+    //modified
+    showHardCard() {
+        for(let hc of this.hideCards){
+            hc.classList.add("card");
+            const hcard = new Card(hc);
+            hcard.on('click', this.handleCardClick.bind(this));
+            this.cards.push(hcard);
+        }
+        this.fire('modeReset');
+    }
+
+    hideHardCard() {
+        for(let hc of this.hideCards){
+            hc.classList.remove("card");
+            this.cards.pop();
+        }
+        this.fire('modeReset');
     }
 }

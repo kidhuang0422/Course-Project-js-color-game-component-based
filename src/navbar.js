@@ -41,18 +41,24 @@ export default class Navbar extends Component {
 
     handleEasyClick() {
         this.current_mode = "easy";
+        this.m_hard.disabled = false;
+        this.m_easy.disabled = true;
         this.m_hard.style.backgroundColor = "#FFFFFF";
         this.m_hard.style.color = "#000000";
         this.m_easy.style.backgroundColor = "#0066FF";
         this.m_easy.style.color = "#FFFFFF";
+        this.fire('changeToEasy', this.current_mode);
     }
 
     handleHardClick() {
         this.current_mode = "hard";
+        this.m_hard.disabled = true;
+        this.m_easy.disabled = false;
         this.m_easy.style.backgroundColor = "#FFFFFF";
         this.m_easy.style.color = "#000000";
         this.m_hard.style.backgroundColor = "#0066FF";
         this.m_hard.style.color = "#FFFFFF";
+        this.fire('changeToHard', this.current_mode);
     }
 
     handleEasyOver() {
