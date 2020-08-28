@@ -13,7 +13,7 @@ export default class Deck extends Component {
         return '.deck';
     }
 
-    constructor(root, currentMode) {
+    constructor(root) {
         super(root);
 
         this.gameOver = false;
@@ -25,16 +25,22 @@ export default class Deck extends Component {
             this.cards.push(card);
         }
         this.pickedColor = this.pickColor();
-        //modified
-        this.currentMode = currentMode;
+
         this.hideCards = root.querySelectorAll('.hide_card');
     }
 
     reset() {
+        console.log(this.cards.length); //debug
+        
         this.gameOver = false;
         for (let card of this.cards)
             card.reset();
         this.pickedColor = this.pickColor();
+    }
+
+    pickColor() {
+        const random = Math.floor(Math.random() * this.cards.length);
+        return this.cards[random].getColor();
     }
 
     getPickedColor() {
@@ -54,22 +60,17 @@ export default class Deck extends Component {
             firer.fadeOut();
             this.fire('wrongClick');
         }
-    }
+    }    
 
-    pickColor() {
-        const random = Math.floor(Math.random() * this.cards.length);
-        return this.cards[random].getColor();
-    }
-
-    //modified
     showHardCard() {
-        for(let hc of this.hideCards){
-            hc.classList.add("card");
-            const hcard = new Card(hc);
-            hcard.on('click', this.handleCardClick.bind(this));
-            this.cards.push(hcard);
+        if(this.cards.length === 3){
+            for(let hc of this.hideCards){
+                hc.classList.add("card");
+                const hcard = new Card(hc);
+                hcard.on('click', this.handleCardClick.bind(this));
+                this.cards.push(hcard);
+            }
         }
-        this.fire('modeReset');
     }
 
     hideHardCard() {
@@ -77,6 +78,10 @@ export default class Deck extends Component {
             hc.classList.remove("card");
             this.cards.pop();
         }
-        this.fire('modeReset');
+    }
+
+    timeout_fade() {
+        for (let card of this.cards)
+            card.fadeIn("#FFF");
     }
 }

@@ -21,3 +21,18 @@ body {
     margin-right: auto;
     max-width: 520px;
 }
+
+/* modified */
+@keyframes blinking {
+    0%{
+        background-color: #414040;
+    }
+    100%{
+        background-color: #232323;
+    }
+}
+  
+.blink{
+    /* NAME | TIME | ITERATION */
+    animation: blinking 1s 5;
+}

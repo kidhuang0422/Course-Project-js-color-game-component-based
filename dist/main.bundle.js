@@ -8780,23 +8780,26 @@ var Main = /*#__PURE__*/function (_Component) {
     _classCallCheck(this, Main);
 
     _this = _super.call(this, root);
-    _this.navbar = new _navbar_js__WEBPACK_IMPORTED_MODULE_1__["default"](root.querySelector('.navbar')); // modified
+    _this.navbar = new _navbar_js__WEBPACK_IMPORTED_MODULE_1__["default"](root.querySelector('.navbar'));
+
+    _this.navbar.on('changeToEasy', _this.handleToEasy.bind(_assertThisInitialized(_this)));
 
     _this.navbar.on('changeToHard', _this.handleToHard.bind(_assertThisInitialized(_this)));
 
-    _this.navbar.on('changeToEasy', _this.handleToEasy.bind(_assertThisInitialized(_this))); //modified
+    _this.navbar.on('changeToNightmare', _this.handleToNightmare.bind(_assertThisInitialized(_this)));
 
-
-    _this.deck = new _deck_js__WEBPACK_IMPORTED_MODULE_3__["default"](root.querySelector('.deck'), _this.navbar.current_mode);
+    _this.deck = new _deck_js__WEBPACK_IMPORTED_MODULE_3__["default"](root.querySelector('.deck'));
 
     _this.deck.on('wrongClick', _this.handleDeckWrongClick.bind(_assertThisInitialized(_this)));
 
     _this.deck.on('rightClick', _this.handleDeckRightClick.bind(_assertThisInitialized(_this)));
 
-    _this.deck.on('modeReset', _this.handleRestClick.bind(_assertThisInitialized(_this)));
-
     _this.board = new _board_js__WEBPACK_IMPORTED_MODULE_2__["default"](root.querySelector('.board'), _this.deck.getPickedColor());
-    _this.reset = new _reset_js__WEBPACK_IMPORTED_MODULE_4__["default"](root.querySelector('.reset'));
+
+    _this.board.on('timeout', _this.handleTimeOut.bind(_assertThisInitialized(_this)));
+
+    _this.resetButton = root.querySelector('.reset');
+    _this.reset = new _reset_js__WEBPACK_IMPORTED_MODULE_4__["default"](_this.resetButton);
 
     _this.reset.on('click', _this.handleRestClick.bind(_assertThisInitialized(_this)));
 
@@ -8804,6 +8807,24 @@ var Main = /*#__PURE__*/function (_Component) {
   }
 
   _createClass(Main, [{
+    key: "handleToEasy",
+    value: function handleToEasy() {
+      this.deck.hideHardCard();
+      this.handleRestClick();
+    }
+  }, {
+    key: "handleToHard",
+    value: function handleToHard() {
+      this.deck.showHardCard();
+      this.handleRestClick();
+    }
+  }, {
+    key: "handleToNightmare",
+    value: function handleToNightmare() {
+      this.deck.showHardCard();
+      this.handleRestClick();
+    }
+  }, {
     key: "handleDeckWrongClick",
     value: function handleDeckWrongClick(firer) {
       this.board.showWrongMessage();
@@ -8814,24 +8835,43 @@ var Main = /*#__PURE__*/function (_Component) {
       this.root.style.backgroundColor = pickedColor;
       this.board.showCorrectMessage();
       this.reset.showPlayAgain();
+
+      if (this.navbar.getCurrentMode() === "nightmare") {
+        //reset
+        this.root.classList.remove("blink");
+        this.board.cleartheTimer();
+        this.resetButton.style.display = "block";
+      }
     }
   }, {
     key: "handleRestClick",
     value: function handleRestClick() {
       this.root.style.backgroundColor = "#232323";
       this.deck.reset();
-      this.board.reset(this.deck.getPickedColor());
+      this.board.reset(this.deck.getPickedColor(), this.navbar.getCurrentMode());
       this.reset.reset();
+
+      if (this.navbar.getCurrentMode() === "nightmare") {
+        this.root.classList.add("blink");
+        this.resetButton.style.display = "none";
+      } else {
+        this.root.classList.remove("blink");
+        this.resetButton.style.display = "block";
+        this.board.cleartheTimer();
+      }
     }
   }, {
-    key: "handleToHard",
-    value: function handleToHard() {
-      this.deck.showHardCard();
-    }
-  }, {
-    key: "handleToEasy",
-    value: function handleToEasy() {
-      this.deck.hideHardCard();
+    key: "handleTimeOut",
+    value: function handleTimeOut(firer, pickedColor) {
+      // to handle the timeout background
+      console.log(pickedColor);
+      this.root.style.backgroundColor = pickedColor;
+      this.root.classList.remove("blink");
+      this.deck.gameOver = true; //can not click the card
+
+      this.deck.timeout_fade();
+      this.resetButton.style.display = "block";
+      this.reset.showPlayAgain();
     }
   }]);
 
@@ -8964,30 +9004,27 @@ var Navbar = /*#__PURE__*/function (_Component) {
     _this = _super.call(this, root);
     _this.brand = root.querySelector('.brand');
 
-    _this.reset(); //modified
+    _this.reset();
+
+    _this.bt_easy = root.querySelector('.easy_mode');
+    _this.bt_hard = root.querySelector('.hard_mode');
+    _this.bt_nightmare = root.querySelector('.nightmare_mode');
+    _this.easy_mode = new _mode_js__WEBPACK_IMPORTED_MODULE_1__["default"](_this.bt_easy);
+    _this.hard_mode = new _mode_js__WEBPACK_IMPORTED_MODULE_1__["default"](_this.bt_hard);
+    _this.nightmare_mode = new _mode_js__WEBPACK_IMPORTED_MODULE_1__["default"](_this.bt_nightmare);
+
+    _this.easy_mode.on('click', _this.toEasy.bind(_assertThisInitialized(_this)));
+
+    _this.hard_mode.on('click', _this.toHard.bind(_assertThisInitialized(_this)));
+
+    _this.nightmare_mode.on('click', _this.toNightmare.bind(_assertThisInitialized(_this))); //the default mode is "easy"
 
 
-    _this.m_easy = root.querySelector('.easy_mode');
-    _this.m_hard = root.querySelector('.hard_mode');
-    _this.easy_mode = new _mode_js__WEBPACK_IMPORTED_MODULE_1__["default"](_this.m_easy);
-    _this.hard_mode = new _mode_js__WEBPACK_IMPORTED_MODULE_1__["default"](_this.m_hard);
-
-    _this.easy_mode.on('click', _this.handleEasyClick.bind(_assertThisInitialized(_this)));
-
-    _this.hard_mode.on('click', _this.handleHardClick.bind(_assertThisInitialized(_this)));
-
-    _this.easy_mode.on('mouseover', _this.handleEasyOver.bind(_assertThisInitialized(_this)));
-
-    _this.easy_mode.on('mouseout', _this.handleEasyOut.bind(_assertThisInitialized(_this)));
-
-    _this.hard_mode.on('mouseover', _this.handleHardOver.bind(_assertThisInitialized(_this)));
-
-    _this.hard_mode.on('mouseout', _this.handleHardOut.bind(_assertThisInitialized(_this))); //the default mode is "easy"
-
-
-    _this.m_easy.style.backgroundColor = "#0066FF";
-    _this.m_easy.style.color = "#FFFFFF";
     _this.current_mode = "easy";
+    _this.bt_easy.disabled = true;
+
+    _this.bt_easy.classList.add("curModeStyle");
+
     return _this;
   }
 
@@ -8996,48 +9033,51 @@ var Navbar = /*#__PURE__*/function (_Component) {
     value: function reset() {// do nothing
     }
   }, {
-    key: "handleEasyClick",
-    value: function handleEasyClick() {
+    key: "toEasy",
+    value: function toEasy() {
       this.current_mode = "easy";
-      this.m_hard.disabled = false;
-      this.m_easy.disabled = true;
-      this.m_hard.style.backgroundColor = "#FFFFFF";
-      this.m_hard.style.color = "#000000";
-      this.m_easy.style.backgroundColor = "#0066FF";
-      this.m_easy.style.color = "#FFFFFF";
-      this.fire('changeToEasy', this.current_mode);
+      this.fire('changeToEasy'); // Disable the mode bt where you are 
+
+      this.bt_easy.disabled = true;
+      this.bt_hard.disabled = false;
+      this.bt_nightmare.disabled = false; // set the mode bt style
+
+      this.bt_easy.classList.toggle("curModeStyle", true);
+      this.bt_hard.classList.toggle("curModeStyle", false);
+      this.bt_nightmare.classList.toggle("curModeStyle", false);
     }
   }, {
-    key: "handleHardClick",
-    value: function handleHardClick() {
+    key: "toHard",
+    value: function toHard() {
       this.current_mode = "hard";
-      this.m_hard.disabled = true;
-      this.m_easy.disabled = false;
-      this.m_easy.style.backgroundColor = "#FFFFFF";
-      this.m_easy.style.color = "#000000";
-      this.m_hard.style.backgroundColor = "#0066FF";
-      this.m_hard.style.color = "#FFFFFF";
-      this.fire('changeToHard', this.current_mode);
+      this.fire('changeToHard'); // Disable the mode bt where you are 
+
+      this.bt_easy.disabled = false;
+      this.bt_hard.disabled = true;
+      this.bt_nightmare.disabled = false; // set the mode bt style
+
+      this.bt_easy.classList.toggle("curModeStyle", false);
+      this.bt_hard.classList.toggle("curModeStyle", true);
+      this.bt_nightmare.classList.toggle("curModeStyle", false);
     }
   }, {
-    key: "handleEasyOver",
-    value: function handleEasyOver() {
-      if (this.current_mode === "hard") this.m_easy.style.color = "#0066FF";
+    key: "toNightmare",
+    value: function toNightmare() {
+      this.current_mode = "nightmare";
+      this.fire('changeToNightmare'); // Disable the mode bt where you are        
+
+      this.bt_easy.disabled = false;
+      this.bt_hard.disabled = false;
+      this.bt_nightmare.disabled = true; // set the mode bt style
+
+      this.bt_easy.classList.toggle("curModeStyle", false);
+      this.bt_hard.classList.toggle("curModeStyle", false);
+      this.bt_nightmare.classList.toggle("curModeStyle", true);
     }
   }, {
-    key: "handleEasyOut",
-    value: function handleEasyOut() {
-      if (this.current_mode === "hard") this.m_easy.style.color = "#000000";
-    }
-  }, {
-    key: "handleHardOver",
-    value: function handleHardOver() {
-      if (this.current_mode === "easy") this.m_hard.style.color = "#0066FF";
-    }
-  }, {
-    key: "handleHardOut",
-    value: function handleHardOut() {
-      if (this.current_mode === "easy") this.m_hard.style.color = "#000000";
+    key: "getCurrentMode",
+    value: function getCurrentMode() {
+      return this.current_mode;
     }
   }]);
 
@@ -9103,8 +9143,6 @@ var Mode = /*#__PURE__*/function (_Component) {
     _this.reset();
 
     root.addEventListener("click", _this.handleDomClick.bind(_assertThisInitialized(_this)));
-    root.addEventListener("mouseover", _this.handleMouseOver.bind(_assertThisInitialized(_this)));
-    root.addEventListener("mouseout", _this.handleMouseOut.bind(_assertThisInitialized(_this)));
     return _this;
   }
 
@@ -9116,16 +9154,6 @@ var Mode = /*#__PURE__*/function (_Component) {
     key: "handleDomClick",
     value: function handleDomClick(e) {
       this.fire('click');
-    }
-  }, {
-    key: "handleMouseOver",
-    value: function handleMouseOver(e) {
-      this.fire('mouseover');
-    }
-  }, {
-    key: "handleMouseOut",
-    value: function handleMouseOut(e) {
-      this.fire('mouseout');
     }
   }]);
 
@@ -9441,7 +9469,7 @@ module.exports = function (list, options) {
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(315);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, ".mode {\n    border: none;\n    background-color: white;\n    font-size: 1rem;\n}\n\n.mode:hover {\n    color: #0066FF;\n}", ""]);
+exports.push([module.i, ".mode {\n    border: none;\n    border-radius: 999rem;\n    background-color: white;\n    color: black;\n    font-size: 1rem;\n    font-weight: bold;\n}\n\n.mode:hover {\n    color: #0066FF;\n}\n\n.curModeStyle {\n    background-color: #0066FF;\n    color: white;\n}\n\n.curModeStyle:hover {\n    color: white;\n}", ""]);
 // Exports
 module.exports = exports;
 
@@ -9642,17 +9670,44 @@ var Board = /*#__PURE__*/function (_Component) {
     _this = _super.call(this, root);
     _this.colorDisplay = root.querySelector('.color-picked');
     _this.messageDisplay = root.querySelector('.message');
+    _this.countDownDitgit = root.querySelector('.countDown');
+    _this.color = color; //pickedColor
 
-    _this.reset(color);
+    _this.currentMode = "easy";
+    _this.num = 5;
+
+    _this.reset(color, _this.currentMode);
 
     return _this;
   }
 
   _createClass(Board, [{
     key: "reset",
-    value: function reset(color) {
+    value: function reset(color, currentMode) {
+      this.currentMode = currentMode;
+      this.color = color;
       this.colorDisplay.textContent = color;
       this.messageDisplay.textContent = "What's the Color?";
+      console.log(this.currentMode);
+
+      if (this.currentMode !== "nightmare") {
+        this.countDownDitgit.style.display = "none";
+      } else {
+        var countdownfunc = function countdownfunc(the) {
+          the.num--;
+
+          if (the.num === 0 || the.currentMode !== "nightmare") {
+            clearInterval(the.countDownID);
+            the.countDownDitgit.style.display = "none";
+            if (the.num === 0) the.timeoutFunc();
+          } else the.countDownDitgit.textContent = the.num;
+        };
+
+        this.num = 5;
+        this.countDownDitgit.style.display = "inline";
+        this.countDownDitgit.textContent = this.num;
+        this.countDownID = window.setInterval(countdownfunc, 1000, this);
+      }
     }
   }, {
     key: "showColor",
@@ -9660,14 +9715,30 @@ var Board = /*#__PURE__*/function (_Component) {
       this.colorDisplay.textContent = color;
     }
   }, {
-    key: "showCorrectMessage",
-    value: function showCorrectMessage() {
-      this.messageDisplay.textContent = "Correct!";
-    }
-  }, {
     key: "showWrongMessage",
     value: function showWrongMessage() {
       this.messageDisplay.textContent = "Try Again";
+    }
+  }, {
+    key: "showCorrectMessage",
+    value: function showCorrectMessage() {
+      this.messageDisplay.textContent = "Correct!";
+
+      if (this.currentMode === "nightmare") {
+        clearInterval(this.countDownID);
+        this.countDownDitgit.style.display = "none";
+      }
+    }
+  }, {
+    key: "timeoutFunc",
+    value: function timeoutFunc() {
+      this.messageDisplay.textContent = "TIMEOUT!";
+      this.fire('timeout', this.color);
+    }
+  }, {
+    key: "cleartheTimer",
+    value: function cleartheTimer() {
+      clearInterval(this.countDownID);
     }
   }]);
 
@@ -9708,7 +9779,7 @@ module.exports = content.locals || {};
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(315);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, ".board {\n    display: block;\n    font-weight: normal;\n    color: white;\n    text-align: center;\n    text-transform: uppercase;\n    margin: 0;\n    padding: 20px 0;\n}\n\n.board .color-picked {\n    font-weight: bold;\n    font-size: 120%;\n}\n\n@media (min-width: 576px) {\n    .board .color-picked {\n        font-size: 200%;\n    }\n}\n", ""]);
+exports.push([module.i, ".board {\n    display: block;\n    font-weight: normal;\n    color: white;\n    text-align: center;\n    text-transform: uppercase;\n    margin: 0;\n    padding: 20px 0;\n}\n\n.board .color-picked {\n    font-weight: bold;\n    font-size: 120%;\n}\n\n@media (min-width: 576px) {\n    .board .color-picked {\n        font-size: 200%;\n    }\n}\n\n.countDown {\n    display: inline;\n}", ""]);
 // Exports
 module.exports = exports;
 
@@ -9773,7 +9844,7 @@ var Deck = /*#__PURE__*/function (_Component) {
     }
   }]);
 
-  function Deck(root, currentMode) {
+  function Deck(root) {
     var _this;
 
     _classCallCheck(this, Deck);
@@ -9800,9 +9871,7 @@ var Deck = /*#__PURE__*/function (_Component) {
       _iterator.f();
     }
 
-    _this.pickedColor = _this.pickColor(); //modified
-
-    _this.currentMode = currentMode;
+    _this.pickedColor = _this.pickColor();
     _this.hideCards = root.querySelectorAll('.hide_card');
     return _this;
   }
@@ -9810,6 +9879,8 @@ var Deck = /*#__PURE__*/function (_Component) {
   _createClass(Deck, [{
     key: "reset",
     value: function reset() {
+      console.log(this.cards.length); //debug
+
       this.gameOver = false;
 
       var _iterator2 = _createForOfIteratorHelper(this.cards),
@@ -9827,6 +9898,12 @@ var Deck = /*#__PURE__*/function (_Component) {
       }
 
       this.pickedColor = this.pickColor();
+    }
+  }, {
+    key: "pickColor",
+    value: function pickColor() {
+      var random = Math.floor(Math.random() * this.cards.length);
+      return this.cards[random].getColor();
     }
   }, {
     key: "getPickedColor",
@@ -9861,33 +9938,26 @@ var Deck = /*#__PURE__*/function (_Component) {
       }
     }
   }, {
-    key: "pickColor",
-    value: function pickColor() {
-      var random = Math.floor(Math.random() * this.cards.length);
-      return this.cards[random].getColor();
-    } //modified
-
-  }, {
     key: "showHardCard",
     value: function showHardCard() {
-      var _iterator4 = _createForOfIteratorHelper(this.hideCards),
-          _step4;
+      if (this.cards.length === 3) {
+        var _iterator4 = _createForOfIteratorHelper(this.hideCards),
+            _step4;
 
-      try {
-        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-          var hc = _step4.value;
-          hc.classList.add("card");
-          var hcard = new _card_js__WEBPACK_IMPORTED_MODULE_1__["default"](hc);
-          hcard.on('click', this.handleCardClick.bind(this));
-          this.cards.push(hcard);
+        try {
+          for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+            var hc = _step4.value;
+            hc.classList.add("card");
+            var hcard = new _card_js__WEBPACK_IMPORTED_MODULE_1__["default"](hc);
+            hcard.on('click', this.handleCardClick.bind(this));
+            this.cards.push(hcard);
+          }
+        } catch (err) {
+          _iterator4.e(err);
+        } finally {
+          _iterator4.f();
         }
-      } catch (err) {
-        _iterator4.e(err);
-      } finally {
-        _iterator4.f();
       }
-
-      this.fire('modeReset');
     }
   }, {
     key: "hideHardCard",
@@ -9906,8 +9976,23 @@ var Deck = /*#__PURE__*/function (_Component) {
       } finally {
         _iterator5.f();
       }
+    }
+  }, {
+    key: "timeout_fade",
+    value: function timeout_fade() {
+      var _iterator6 = _createForOfIteratorHelper(this.cards),
+          _step6;
 
-      this.fire('modeReset');
+      try {
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var card = _step6.value;
+          card.fadeIn("#FFF");
+        }
+      } catch (err) {
+        _iterator6.e(err);
+      } finally {
+        _iterator6.f();
+      }
     }
   }]);
 
@@ -10255,7 +10340,7 @@ module.exports = content.locals || {};
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(315);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "* {\n    box-sizing: border-box;\n}\n\nhtml {\n    font-size: 16px;\n    line-height: 1.5;\n}\n\nbody {\n    background-color: #232323;\n    margin: 0;\n    font-family: -apple-system, system-ui, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;\n    transition: background 0.6s;\n    -webkit-transition: background 0.6s;\n    -moz-transition: background 0.6s;\n}\n\n.container {\n    margin-left: auto;\n    margin-right: auto;\n    max-width: 520px;\n}", ""]);
+exports.push([module.i, "* {\n    box-sizing: border-box;\n}\n\nhtml {\n    font-size: 16px;\n    line-height: 1.5;\n}\n\nbody {\n    background-color: #232323;\n    margin: 0;\n    font-family: -apple-system, system-ui, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;\n    transition: background 0.6s;\n    -webkit-transition: background 0.6s;\n    -moz-transition: background 0.6s;\n}\n\n.container {\n    margin-left: auto;\n    margin-right: auto;\n    max-width: 520px;\n}\n\n/* modified */\n@keyframes blinking {\n    0%{\n        background-color: #414040;\n    }\n    100%{\n        background-color: #232323;\n    }\n}\n  \n.blink{\n    /* NAME | TIME | ITERATION */\n    animation: blinking 1s 5;\n}", ""]);
 // Exports
 module.exports = exports;
 

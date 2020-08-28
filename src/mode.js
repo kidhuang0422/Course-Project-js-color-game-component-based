@@ -12,8 +12,6 @@ export default class Mode extends Component {
         this.reset();
 
         root.addEventListener("click", this.handleDomClick.bind(this));
-        root.addEventListener("mouseover", this.handleMouseOver.bind(this));
-        root.addEventListener("mouseout", this.handleMouseOut.bind(this));
     }
 
     reset() {
@@ -22,13 +20,5 @@ export default class Mode extends Component {
 
     handleDomClick(e) {
         this.fire('click');
-    }
-
-    handleMouseOver(e) {
-        this.fire('mouseover');
-    }
-
-    handleMouseOut(e) {
-        this.fire('mouseout');
     }
 }

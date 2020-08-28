@@ -2,6 +2,16 @@
 
 - The easy mode is based on an example of component-based color game.
 
-### Hard Mode
+### Hard mode
 
-- The "Easy" & "Hard" button can let you choose the game mode.
+- The Mode button can let you choose the game mode (To hard mode or to nightmare mode).
+- There are added to 6 cards.
+
+### Nightmare mode
+
+- You have to pick the correct color within 5 seconds.
+- When time out, the background will turn into the correct color.
+
+### Demo
+
+![螢幕錄製 2020-08-28 下午10](/Users/kidhuang/Downloads/螢幕錄製 2020-08-28 下午10.gif)
