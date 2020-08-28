@@ -14,4 +14,4 @@
 
 ### Demo
 
-![螢幕錄製 2020-08-28 下午10](/Users/kidhuang/Downloads/螢幕錄製 2020-08-28 下午10.gif)
+![螢幕錄製 2020-08-28 下午10](/Users/kidhuang/Web/lab-js-color-game-component-based/images/螢幕錄製 2020-08-28 下午10.gif)
