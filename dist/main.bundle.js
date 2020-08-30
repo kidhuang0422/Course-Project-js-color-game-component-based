@@ -9684,6 +9684,8 @@ var Board = /*#__PURE__*/function (_Component) {
   _createClass(Board, [{
     key: "reset",
     value: function reset(color, currentMode) {
+      var _this2 = this;
+
       this.currentMode = currentMode;
       this.color = color;
       this.colorDisplay.textContent = color;
@@ -9693,20 +9695,24 @@ var Board = /*#__PURE__*/function (_Component) {
       if (this.currentMode !== "nightmare") {
         this.countDownDitgit.style.display = "none";
       } else {
-        var countdownfunc = function countdownfunc(the) {
-          the.num--;
-
-          if (the.num === 0 || the.currentMode !== "nightmare") {
-            clearInterval(the.countDownID);
-            the.countDownDitgit.style.display = "none";
-            if (the.num === 0) the.timeoutFunc();
-          } else the.countDownDitgit.textContent = the.num;
-        };
-
         this.num = 5;
         this.countDownDitgit.style.display = "inline";
-        this.countDownDitgit.textContent = this.num;
-        this.countDownID = window.setInterval(countdownfunc, 1000, this);
+        this.countDownDitgit.textContent = this.num; // this.countDownID = window.setInterval(countdownfunc, 1000, this);
+        // this.countDownID = setInterval(this.countdownfunc.bind(this), 1000);
+
+        this.countDownID = setInterval(function () {
+          return _this2.countdownfunc();
+        }, 1000); // function countdownfunc(the) {
+        //     the.num--;
+        //     if(the.num === 0 || the.currentMode !== "nightmare"){
+        //         clearInterval(the.countDownID);
+        //         the.countDownDitgit.style.display = "none";
+        //         if(the.num === 0)
+        //             the.timeoutFunc();
+        //     }
+        //     else
+        //         the.countDownDitgit.textContent = the.num;
+        // }
       }
     }
   }, {
@@ -9739,6 +9745,17 @@ var Board = /*#__PURE__*/function (_Component) {
     key: "cleartheTimer",
     value: function cleartheTimer() {
       clearInterval(this.countDownID);
+    }
+  }, {
+    key: "countdownfunc",
+    value: function countdownfunc() {
+      this.num--;
+
+      if (this.num === 0 || this.currentMode !== "nightmare") {
+        clearInterval(this.countDownID);
+        this.countDownDitgit.style.display = "none";
+        if (this.num === 0) this.timeoutFunc();
+      } else this.countDownDitgit.textContent = this.num;
     }
   }]);
 

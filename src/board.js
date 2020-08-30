@@ -41,20 +41,22 @@ export default class Board extends Component {
             this.countDownDitgit.style.display = "inline";
             this.countDownDitgit.textContent = this.num;
 
-            this.countDownID = window.setInterval(countdownfunc, 1000, this);
+            // this.countDownID = window.setInterval(countdownfunc, 1000, this);
+            // this.countDownID = setInterval(this.countdownfunc.bind(this), 1000);
+            this.countDownID = setInterval(() => this.countdownfunc(), 1000);
 
-            function countdownfunc(the) {
-                the.num--;
+            // function countdownfunc(the) {
+            //     the.num--;
                 
-                if(the.num === 0 || the.currentMode !== "nightmare"){
-                    clearInterval(the.countDownID);
-                    the.countDownDitgit.style.display = "none";
-                    if(the.num === 0)
-                        the.timeoutFunc();
-                }
-                else
-                    the.countDownDitgit.textContent = the.num;
-            }
+            //     if(the.num === 0 || the.currentMode !== "nightmare"){
+            //         clearInterval(the.countDownID);
+            //         the.countDownDitgit.style.display = "none";
+            //         if(the.num === 0)
+            //             the.timeoutFunc();
+            //     }
+            //     else
+            //         the.countDownDitgit.textContent = the.num;
+            // }
         }
     }
 
@@ -82,5 +84,18 @@ export default class Board extends Component {
 
     cleartheTimer() {
         clearInterval(this.countDownID);
+    }
+
+    countdownfunc() {
+        this.num--;
+        
+        if(this.num === 0 || this.currentMode !== "nightmare"){
+            clearInterval(this.countDownID);
+            this.countDownDitgit.style.display = "none";
+            if(this.num === 0)
+                this.timeoutFunc();
+        }
+        else
+            this.countDownDitgit.textContent = this.num;
     }
 }
