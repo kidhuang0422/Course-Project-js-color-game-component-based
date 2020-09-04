@@ -1,4 +1,4 @@
-# Practice - color game (component based)
+# Color Game (Component Based)
 
 - The easy mode is based on an example of component-based color game.
 
